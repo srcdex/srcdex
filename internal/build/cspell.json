@@ -1,0 +1,33 @@
+{
+  "version": "0.2",
+  "language": "en-GB",
+  "words": [
+    "bleve",
+    "coverpkg",
+    "darvaza",
+    "docstrings",
+    "FAISS",
+    "fsnotify",
+    "GOPATH",
+    "GOTEST",
+    "gotreesitter",
+    "hnsw",
+    "Matryoshka",
+    "nomic",
+    "odvcencio",
+    "Ollama",
+    "pgvector",
+    "Qwen",
+    "srcdex",
+    "vek"
+  ],
+  "ignorePaths": [
+    "*.lock",
+    ".coverage",
+    ".git",
+    ".tmp",
+    "go.sum",
+    "node_modules",
+    "vendor"
+  ]
+}
