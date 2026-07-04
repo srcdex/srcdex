@@ -22,6 +22,15 @@ var openaiCmd = &cobra.Command{
 	Short: "Explores OpenAI-compatible embeddings services",
 }
 
+var openaiInfoCmd = &cobra.Command{
+	Use:   "info",
+	Short: "Reports the engine the flags select and the models it serves",
+	Args:  cobra.NoArgs,
+	RunE:  runOpenAIInfo,
+
+	SilenceUsage: true,
+}
+
 var openaiEmbedCmd = &cobra.Command{
 	Use:   "embed <text>...",
 	Short: "Embeds the given texts and reports the vector shapes",
@@ -53,7 +62,7 @@ func init() {
 	flags.String(modelFlag, "", "embedding model to run")
 	flags.String(apiKeyFlag, "", "bearer token, when the service needs one")
 
-	openaiCmd.AddCommand(openaiEmbedCmd, openaiModelsCmd)
+	openaiCmd.AddCommand(openaiInfoCmd, openaiEmbedCmd, openaiModelsCmd)
 	rootCmd.AddCommand(openaiCmd)
 }
 
@@ -68,11 +77,33 @@ func newOpenAIClient(flags *pflag.FlagSet) (*openai.Client, error) {
 	})
 }
 
+func runOpenAIInfo(cmd *cobra.Command, _ []string) error {
+	client, err := newOpenAIClient(cmd.Flags())
+	if err != nil {
+		return err
+	}
+	defer func() { _ = client.Close() }()
+
+	cmd.Printf("Engine: %s\n", client.Name())
+
+	models, err := client.Models(cmd.Context())
+	if err != nil {
+		return err
+	}
+
+	cmd.Println("Models:")
+	for _, m := range models {
+		cmd.Printf("  %s\n", m.Name())
+	}
+	return nil
+}
+
 func runOpenAIEmbed(cmd *cobra.Command, args []string) error {
 	client, err := newOpenAIClient(cmd.Flags())
 	if err != nil {
 		return err
 	}
+	defer func() { _ = client.Close() }()
 
 	emb, err := client.New(core.Maybe(cmd.Flags().GetString(modelFlag)))
 	if err != nil {
@@ -99,6 +130,7 @@ func runOpenAIModels(cmd *cobra.Command, _ []string) error {
 	if err != nil {
 		return err
 	}
+	defer func() { _ = client.Close() }()
 
 	models, err := client.Models(cmd.Context())
 	if err != nil {

@@ -11,6 +11,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"darvaza.org/core"
@@ -49,8 +50,9 @@ type Config struct {
 // New creates a [Client] speaking to the OpenAI-compatible service
 // the [Config] describes.
 func New(cfg Config) (*Client, error) {
-	if cfg.BaseURL == "" {
-		return nil, core.Wrap(core.ErrInvalid, "BaseURL")
+	base, err := newBaseURL(cfg.BaseURL)
+	if err != nil {
+		return nil, err
 	}
 
 	if cfg.Logger == nil {
@@ -59,18 +61,52 @@ func New(cfg Config) (*Client, error) {
 	if cfg.Client == nil {
 		cfg.Client = http.DefaultClient
 	}
-	cfg.BaseURL = strings.TrimRight(cfg.BaseURL, "/")
 
-	return &Client{cfg: cfg}, nil
+	return &Client{cfg: cfg, base: base}, nil
+}
+
+// newBaseURL parses and normalises the service root, rejecting
+// values a request could not be built from.
+func newBaseURL(s string) (*url.URL, error) {
+	if s == "" {
+		return nil, core.Wrap(core.ErrInvalid, "BaseURL")
+	}
+
+	u, err := url.Parse(s)
+	if err != nil {
+		return nil, core.Wrapf(core.ErrInvalid, "BaseURL: %s", err.Error())
+	}
+
+	switch {
+	case u.Host == "", u.Scheme != "http" && u.Scheme != "https":
+		return nil, core.Wrapf(core.ErrInvalid, "BaseURL: %q", s)
+	}
+
+	u.Path = strings.TrimRight(u.Path, "/")
+	return u, nil
 }
 
 // Client is the [embeddings.Engine] over an OpenAI-compatible HTTP
 // service.
 type Client struct {
-	cfg Config
+	base *url.URL
+	cfg  Config
 }
 
 var _ embeddings.Engine = (*Client)(nil)
+
+// Name implements [embeddings.Engine], describing the service the
+// client speaks to by host and path, e.g. "OpenAI:localhost:11434".
+// The scheme is a transport detail and stays out of the name.
+func (c *Client) Name() string {
+	return "OpenAI:" + c.base.Host + c.base.Path
+}
+
+// Close implements [embeddings.Engine]; the client holds no
+// resources to release.
+func (*Client) Close() error {
+	return nil
+}
 
 // Models implements [embeddings.Engine] by asking the service which
 // models it serves.
@@ -149,7 +185,7 @@ func (c *Client) decodeModels(resp *http.Response) ([]embeddings.Model, error) {
 func (c *Client) do(ctx context.Context, method, path string,
 	body io.Reader) (*http.Response, error) {
 	req, err := http.NewRequestWithContext(ctx, method,
-		c.cfg.BaseURL+path, body)
+		c.base.JoinPath(path).String(), body)
 	if err != nil {
 		return nil, err
 	}

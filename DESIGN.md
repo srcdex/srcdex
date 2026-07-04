@@ -60,7 +60,11 @@ it needs and no more.
   its projects — handing each one its source tree, that embedder, and
   its settings. The engine is shared, not owned: its lifetime sits above
   the workspace, so one engine can serve many projects across many
-  workspaces.
+  workspaces. Sharing resolves by identity: an engine's configuration is
+  its serialisable identity, and workspaces whose settings resolve to
+  the same identity share one instance. Release follows the same line: a
+  workspace only stops referencing its engine; ending the instance
+  belongs to the layer that shares it.
 - A **project** is the per-project composition root and owns the source
   side: its include/exclude rules decide which files are worth indexing, and
   it feeds the chosen source to the parser. It opens or initialises its
@@ -94,8 +98,8 @@ The canonical terms used throughout `srcdex`:
 | <a id="access-layer"></a>Access Layer | The subsystem that serves query results: an embedded web UI for developers and a [Model Context Protocol][mcp] server for AI agents. |
 | <a id="backend"></a>Backend | The content-agnostic index subsystem beneath a project; ingests [indexable items][indexable-item] and persists them within its store root. |
 | <a id="dual-store"></a>Dual store | The pair a [backend][backend] keeps: a keyword index ([`bleve`][bleve]) and a vector index ([`coder/hnsw`][hnsw]), fused at query time with [RRF][rrf]. |
-| <a id="embedder"></a>Embedder | The [Embeddings Engine][embeddings-engine]'s view bound to one model: what a workspace hands its projects and a [backend][backend] embeds with. |
-| <a id="embeddings-engine"></a>Embeddings Engine | The subsystem that turns text into vectors; a shared service referenced by a workspace, not owned by it — one engine serves many projects across many workspaces (1:N). It lists the models it can serve and binds one on request, yielding an [Embedder][embedder]. |
+| <a id="embedder"></a>Embedder | The [Embeddings Engine][embeddings-engine]'s view bound to one model: what a workspace hands its projects and a [backend][backend] embeds with. A vector index is built for and recorded against the bound model, not the engine: the same model served through a different engine yields comparable vectors, so changing providers does not invalidate an index. |
+| <a id="embeddings-engine"></a>Embeddings Engine | The subsystem that turns text into vectors; a shared service referenced by a workspace, not owned by it — one engine serves many projects across many workspaces (1:N). It lists the models it can serve and binds one on request, yielding an [Embedder][embedder]. Its configuration is its serialisable identity, by which sharing resolves. |
 | <a id="envelope"></a>Envelope | A [structural unit][structural-unit] wrapped in its metadata header (repository, file, scope) before embedding. |
 | <a id="indexable-item"></a>Indexable item | What the [backend][backend] ingests: a ready-made record carrying no dependency on source code. |
 | <a id="ingestion-and-orchestration"></a>Ingestion & Orchestration | The subsystem that drives indexing across a workspace: it tracks source change through Git and applies each project's rules to decide what is fed onward for parsing. |

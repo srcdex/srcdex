@@ -9,6 +9,10 @@ import (
 // projects across many workspaces. Consumers depend on this
 // interface alone, and implementations are safe for concurrent use.
 type Engine interface {
+	// Name describes the engine instance for display, including
+	// what it embeds with, e.g. "OpenAI:localhost:11434".
+	Name() string
+
 	// Models lists the models the engine can serve.
 	Models(ctx context.Context) ([]Model, error)
 
@@ -18,6 +22,10 @@ type Engine interface {
 	// [ErrNoModel]. Binding is offline — an unknown model
 	// surfaces on the first [Embedder.Embed] call.
 	New(model string) (Embedder, error)
+
+	// Close releases the engine's resources; the engine is
+	// unusable afterwards.
+	Close() error
 }
 
 // Embedder is an [Engine]'s view bound to one model: what a

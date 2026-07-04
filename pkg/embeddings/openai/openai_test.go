@@ -20,6 +20,7 @@ import (
 var _ core.TestCase = embedTestCase{}
 var _ core.TestCase = modelsTestCase{}
 var _ core.TestCase = configTestCase{}
+var _ core.TestCase = nameTestCase{}
 
 // stubService serves the canned response, but only on the path the
 // client must derive from the base URL.
@@ -338,9 +339,59 @@ func TestNew(t *testing.T) {
 	testCases := []configTestCase{
 		newConfigTestCase("valid", "http://localhost:11434"),
 		newConfigTestCaseError("missing base URL", ""),
+		newConfigTestCaseError("missing scheme", "localhost:11434"),
+		newConfigTestCaseError("unsupported scheme", "ftp://example.org"),
+		newConfigTestCaseError("malformed", "http://[::1"),
 	}
 
 	core.RunTestCases(t, testCases)
+}
+
+// nameTestCase exercises Name over the constructor's base-URL
+// normalisation.
+type nameTestCase struct {
+	name    string
+	baseURL string
+	want    string
+}
+
+func (tc nameTestCase) Name() string {
+	return tc.name
+}
+
+func (tc nameTestCase) Test(t *testing.T) {
+	t.Helper()
+
+	client := mustNewClient(t, tc.baseURL)
+	core.AssertEqual(t, tc.want, client.Name(), "name")
+}
+
+func newNameTestCase(name, baseURL, want string) nameTestCase {
+	return nameTestCase{
+		name:    name,
+		baseURL: baseURL,
+		want:    want,
+	}
+}
+
+func TestName(t *testing.T) {
+	testCases := []nameTestCase{
+		newNameTestCase("plain", "http://localhost:11434",
+			"OpenAI:localhost:11434"),
+		newNameTestCase("trailing slash", "http://localhost:11434/",
+			"OpenAI:localhost:11434"),
+		newNameTestCase("proxy path", "https://gw.example.org/ollama/",
+			"OpenAI:gw.example.org/ollama"),
+		newNameTestCase("default port", "https://api.openai.com",
+			"OpenAI:api.openai.com"),
+	}
+
+	core.RunTestCases(t, testCases)
+}
+
+func TestClose(t *testing.T) {
+	client := mustNewClient(t, "http://localhost:1")
+	core.AssertNoError(t, client.Close(), "Close")
 }
 
 func mustNewClient(t *testing.T, baseURL string) *openai.Client {
