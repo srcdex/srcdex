@@ -51,7 +51,7 @@ together.
 
 ## Prerequisites
 
-- Go 1.24 or later (the module's minimum; see [go.mod](go.mod)).
+- Go 1.26 or later (the module's minimum; see [go.mod](go.mod)).
 - `make` available.
 
 See [BUILDING.md → Required Tools][building] for the full toolchain.

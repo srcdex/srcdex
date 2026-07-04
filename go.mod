@@ -1,6 +1,6 @@
 module srcdex.dev
 
-go 1.24.0
+go 1.26.0
 
 require (
 	darvaza.org/core v0.19.1
