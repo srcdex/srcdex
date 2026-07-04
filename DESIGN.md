@@ -32,7 +32,7 @@ Source context ─────────────────────�
    · · · · · │ indexable items · · · · · · · · · · · ·  parser seam
              ▼
 Index context ────────────────────────────────────────────────────
-  Backend (per project) — content-agnostic; persists within a writeable fs.FS
+  Backend (per project) — content-agnostic; persists within its store root
   ┌───────────────────────────┐           ┌──────────────────────────┐
   │ Keyword Index (bleve)     │   embed   │ Embeddings Engine        │
   │ Vector Index (coder/hnsw) │ ◀──────── │ shared · 1:N             │
@@ -57,7 +57,7 @@ it needs and no more.
 - A **workspace** holds the shared settings and references a single
   embeddings engine; the model it embeds with is one of those settings,
   bound against the engine to yield the workspace's embedder. It composes
-  its projects — handing each one its source `fs.FS`, that embedder, and
+  its projects — handing each one its source tree, that embedder, and
   its settings. The engine is shared, not owned: its lifetime sits above
   the workspace, so one engine can serve many projects across many
   workspaces.
@@ -74,10 +74,9 @@ it needs and no more.
 - The **backend** is content-agnostic. It ingests ready-made indexable items
   rather than files, so nothing ties its store to source code. It is
   constructed with two dependencies handed down through the project — a
-  narrowed, writeable `fs.FS` for its store root (per-project) and the
-  embedder it embeds with, the workspace's model-bound view of the shared
-  engine (one engine serves many backends, 1:N) — and it persists only
-  within that `fs.FS`, never reaching for the `os` package.
+  narrowed, writeable store root (per-project) and the embedder it embeds
+  with, the workspace's model-bound view of the shared engine (one engine
+  serves many backends, 1:N) — and it persists only within that store root.
 
 Because the backend is content-agnostic, the source side does the enveloping:
 each structural unit is wrapped with its repository, file, and scope metadata
@@ -93,7 +92,7 @@ The canonical terms used throughout `srcdex`:
 | Term | Meaning |
 | --- | --- |
 | <a id="access-layer"></a>Access Layer | The subsystem that serves query results: an embedded web UI for developers and a [Model Context Protocol][mcp] server for AI agents. |
-| <a id="backend"></a>Backend | The content-agnostic index subsystem beneath a project; ingests [indexable items][indexable-item] and persists them within a narrowed, writeable `fs.FS`. |
+| <a id="backend"></a>Backend | The content-agnostic index subsystem beneath a project; ingests [indexable items][indexable-item] and persists them within its store root. |
 | <a id="dual-store"></a>Dual store | The pair a [backend][backend] keeps: a keyword index ([`bleve`][bleve]) and a vector index ([`coder/hnsw`][hnsw]), fused at query time with [RRF][rrf]. |
 | <a id="embedder"></a>Embedder | The [Embeddings Engine][embeddings-engine]'s view bound to one model: what a workspace hands its projects and a [backend][backend] embeds with. |
 | <a id="embeddings-engine"></a>Embeddings Engine | The subsystem that turns text into vectors; a shared service referenced by a workspace, not owned by it — one engine serves many projects across many workspaces (1:N). It lists the models it can serve and binds one on request, yielding an [Embedder][embedder]. |

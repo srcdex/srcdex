@@ -28,9 +28,9 @@ agents through the Model Context Protocol (MCP).
 The canonical import path is `srcdex.dev` (a vanity import); the repository
 is hosted at `github.com/srcdex/srcdex`.
 
-The project is in its early stages: little or no implementation exists yet,
-and the architecture is still settling. Treat design decisions as direction,
-and avoid inventing details that have not been decided.
+The project is in its early stages: implementation has only begun, and the
+architecture is still settling. Treat design decisions as direction, and
+avoid inventing details that have not been decided.
 
 ## Code Architecture
 

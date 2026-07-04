@@ -6,7 +6,7 @@ semantic search, and serves results to human developers through an embedded
 web UI and to AI agents through the Model Context Protocol (MCP).
 
 > **Status:** early and aspirational. The architecture is still settling, and
-> little or no implementation exists yet.
+> implementation has only begun.
 
 ## Architecture
 
@@ -22,7 +22,7 @@ query serving across five subsystems, each behind a Go interface:
 - **Backend** — the content-agnostic index beneath each project. It keeps a
   dual store — a keyword index (`bleve`, BM25) alongside a vector index
   (`coder/hnsw`, approximate nearest-neighbour search) — and persists within
-  a narrowed, writeable `fs.FS`.
+  its store root.
 - **Embeddings Engine** — a single `Engine` interface with two
   implementations: the default runs the pure-Go Born framework in-process (an
   embedded model, or a weights file fetched with `srcdex pull`); the second is
