@@ -1,5 +1,6 @@
 // Package embeddings turns text into vectors. It defines the
-// Embeddings interface every engine implements, with two engines
-// behind it: the in-process Born framework and an external
+// [Engine] interface every engine implements and the [Embedder],
+// the engine's view bound to one model, with two engines behind
+// them: the in-process Born framework and an external
 // OpenAI-compatible HTTP service.
 package embeddings

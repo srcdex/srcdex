@@ -2,7 +2,11 @@ module srcdex.dev
 
 go 1.24.0
 
-require darvaza.org/core v0.19.1
+require (
+	darvaza.org/core v0.19.1
+	darvaza.org/slog v0.9.1
+	darvaza.org/slog/handlers/discard v0.7.1
+)
 
 require (
 	golang.org/x/net v0.50.0 // indirect
