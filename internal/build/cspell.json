@@ -20,7 +20,8 @@
     "pgvector",
     "Qwen",
     "srcdex",
-    "vek"
+    "vek",
+    "Wrapf"
   ],
   "ignorePaths": [
     "**/*.lock",

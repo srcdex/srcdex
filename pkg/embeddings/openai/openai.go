@@ -3,8 +3,6 @@
 // server such as Ollama and hosted endpoints.
 package openai
 
-// cspell:words resp Wrapf
-
 import (
 	"bytes"
 	"context"
@@ -111,13 +109,13 @@ func (*Client) Close() error {
 // Models implements [embeddings.Engine] by asking the service which
 // models it serves.
 func (c *Client) Models(ctx context.Context) ([]embeddings.Model, error) {
-	resp, err := c.do(ctx, http.MethodGet, modelsPath, nil)
+	response, err := c.do(ctx, http.MethodGet, modelsPath, nil)
 	if err != nil {
 		return nil, err
 	}
-	defer func() { _ = resp.Body.Close() }()
+	defer func() { _ = response.Body.Close() }()
 
-	return c.decodeModels(resp)
+	return c.decodeModels(response)
 }
 
 // New implements [embeddings.Engine] by binding the named model.
@@ -162,13 +160,14 @@ type modelsResponse struct {
 	Data []Model `json:"data"`
 }
 
-func (c *Client) decodeModels(resp *http.Response) ([]embeddings.Model, error) {
-	if resp.StatusCode != http.StatusOK {
-		return nil, c.serviceFailed(resp)
+func (c *Client) decodeModels(
+	response *http.Response) ([]embeddings.Model, error) {
+	if response.StatusCode != http.StatusOK {
+		return nil, c.serviceFailed(response)
 	}
 
 	var out modelsResponse
-	if err := json.NewDecoder(resp.Body).Decode(&out); err != nil {
+	if err := json.NewDecoder(response.Body).Decode(&out); err != nil {
 		return nil, core.Wrap(embeddings.ErrBadResponse, err.Error())
 	}
 
@@ -202,15 +201,15 @@ func (c *Client) do(ctx context.Context, method, path string,
 
 // serviceFailed logs the service's own diagnosis and reports the
 // failure status.
-func (c *Client) serviceFailed(resp *http.Response) error {
-	body, _ := io.ReadAll(io.LimitReader(resp.Body, maxDiagnosisBody))
+func (c *Client) serviceFailed(response *http.Response) error {
+	body, _ := io.ReadAll(io.LimitReader(response.Body, maxDiagnosisBody))
 	if len(body) > 0 {
 		c.cfg.Logger.Error().
-			WithField("status", resp.StatusCode).
+			WithField("status", response.StatusCode).
 			Print(string(body))
 	}
 
-	return core.Wrap(embeddings.ErrServiceFailed, resp.Status)
+	return core.Wrap(embeddings.ErrServiceFailed, response.Status)
 }
 
 // embedder is a [Client]'s view bound to one model.
@@ -245,23 +244,24 @@ func (e *embedder) Embed(ctx context.Context, texts []string) ([][]float32, erro
 		return nil, err
 	}
 
-	resp, err := e.client.do(ctx, http.MethodPost, embeddingsPath,
+	response, err := e.client.do(ctx, http.MethodPost, embeddingsPath,
 		bytes.NewReader(body))
 	if err != nil {
 		return nil, err
 	}
-	defer func() { _ = resp.Body.Close() }()
+	defer func() { _ = response.Body.Close() }()
 
-	return e.decode(resp, len(texts))
+	return e.decode(response, len(texts))
 }
 
-func (e *embedder) decode(resp *http.Response, count int) ([][]float32, error) {
-	if resp.StatusCode != http.StatusOK {
-		return nil, e.client.serviceFailed(resp)
+func (e *embedder) decode(response *http.Response,
+	count int) ([][]float32, error) {
+	if response.StatusCode != http.StatusOK {
+		return nil, e.client.serviceFailed(response)
 	}
 
 	var out embedResponse
-	if err := json.NewDecoder(resp.Body).Decode(&out); err != nil {
+	if err := json.NewDecoder(response.Body).Decode(&out); err != nil {
 		return nil, core.Wrap(embeddings.ErrBadResponse, err.Error())
 	}
 
