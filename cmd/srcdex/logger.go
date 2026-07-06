@@ -1,6 +1,6 @@
 package main
 
-// cspell:words pflag zerolog slogzerolog
+// cspell:words zerolog slogzerolog
 
 import (
 	"os"

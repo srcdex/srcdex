@@ -1,7 +1,5 @@
 package main
 
-// cspell:words pflag
-
 import (
 	"time"
 
@@ -67,11 +65,13 @@ func init() {
 }
 
 func newOpenAIClient(flags *pflag.FlagSet) (*openai.Client, error) {
+	cfg := newConfig(flags)
+
 	baseURL := core.Maybe(flags.GetString(baseURLFlag))
 	apiKey := core.Maybe(flags.GetString(apiKeyFlag))
 
 	return openai.New(openai.Config{
-		Logger:  newLogger(flags),
+		Logger:  cfg.Logger,
 		BaseURL: baseURL,
 		APIKey:  apiKey,
 	})
