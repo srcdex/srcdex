@@ -14,7 +14,7 @@ require (
 )
 
 require (
-	github.com/born-ml/born v0.9.14
+	github.com/born-ml/born v0.9.15
 	github.com/rs/zerolog v1.35.1
 	github.com/spf13/cobra v1.10.2
 	github.com/spf13/pflag v1.0.10
@@ -25,12 +25,12 @@ require (
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.30.3 // indirect
-	github.com/go-webgpu/goffi v0.5.5 // indirect
+	github.com/go-webgpu/goffi v0.5.6 // indirect
 	github.com/go-webgpu/webgpu v0.5.2 // indirect
 	github.com/gogpu/gpucontext v0.21.0 // indirect
 	github.com/gogpu/gputypes v0.5.1 // indirect
 	github.com/gogpu/naga v0.17.15 // indirect
-	github.com/gogpu/wgpu v0.30.8 // indirect
+	github.com/gogpu/wgpu v0.30.9 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/kardianos/service v1.2.4 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
