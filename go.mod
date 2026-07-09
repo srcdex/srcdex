@@ -3,9 +3,9 @@ module srcdex.dev
 go 1.26.0
 
 require (
-	darvaza.org/core v0.19.1
+	darvaza.org/core v0.20.0
 	darvaza.org/sidecar/pkg/service v0.3.0
-	darvaza.org/slog v0.9.1
+	darvaza.org/slog v0.10.0
 	darvaza.org/slog/handlers/cblog v0.9.1 // indirect
 	darvaza.org/slog/handlers/discard v0.7.1
 	darvaza.org/slog/handlers/zerolog v0.7.1
@@ -39,5 +39,5 @@ require (
 	golang.org/x/crypto v0.53.0 // indirect
 	golang.org/x/net v0.56.0 // indirect
 	golang.org/x/sys v0.46.0 // indirect
-	golang.org/x/text v0.38.0 // indirect
+	golang.org/x/text v0.39.0 // indirect
 )
