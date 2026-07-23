@@ -14,7 +14,7 @@ require (
 )
 
 require (
-	github.com/born-ml/born v0.9.15
+	github.com/born-ml/born v0.9.18
 	github.com/rs/zerolog v1.35.1
 	github.com/spf13/cobra v1.10.2
 	github.com/spf13/pflag v1.0.10
@@ -30,7 +30,7 @@ require (
 	github.com/gogpu/gpucontext v0.21.0 // indirect
 	github.com/gogpu/gputypes v0.5.1 // indirect
 	github.com/gogpu/naga v0.17.15 // indirect
-	github.com/gogpu/wgpu v0.30.9 // indirect
+	github.com/gogpu/wgpu v0.30.10 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/kardianos/service v1.2.4 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
