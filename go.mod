@@ -3,7 +3,7 @@ module srcdex.dev
 go 1.26.0
 
 require (
-	darvaza.org/core v0.19.1
+	darvaza.org/core v0.21.2
 	darvaza.org/sidecar/pkg/service v0.3.0
 	darvaza.org/slog v0.9.1
 	darvaza.org/slog/handlers/cblog v0.9.1 // indirect
@@ -36,8 +36,8 @@ require (
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/mattn/go-colorable v0.1.15 // indirect
 	github.com/mattn/go-isatty v0.0.22 // indirect
-	golang.org/x/crypto v0.53.0 // indirect
-	golang.org/x/net v0.56.0 // indirect
-	golang.org/x/sys v0.46.0 // indirect
-	golang.org/x/text v0.38.0 // indirect
+	golang.org/x/crypto v0.54.0 // indirect
+	golang.org/x/net v0.57.0 // indirect
+	golang.org/x/sys v0.47.0 // indirect
+	golang.org/x/text v0.40.0 // indirect
 )
