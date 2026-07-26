@@ -1,5 +1,7 @@
 # AGENTS.md
 
+<!-- cSpell:words gsed ggrep gsort gxargs -->
+
 This file provides guidance to AI agents when working with code in this
 repository. For developers and general project information, please refer to
 [README.md](README.md) first.
@@ -63,9 +65,14 @@ srcdex vendors the shared darvaza.org build system. Most-used commands:
 ```bash
 make tidy         # format, lint, spell-check, validate
 make test         # run tests (no cache reuse)
+make vet          # type-check every package and its tests
 make coverage     # tests with coverage
 make all          # full build cycle (get, generate, tidy, build)
 ```
+
+`make vet` compiles each package and its tests without running them, so
+`GOOS=windows make vet` (or `darwin`) is the local pre-flight for the
+cross-platform CI described below.
 
 The full reference lives in [BUILDING.md][building]. Key sections:
 
@@ -77,6 +84,24 @@ The full reference lives in [BUILDING.md][building]. Key sections:
 - Pre-commit Checklist.
 
 Run `make tidy` until it passes before committing.
+
+### Continuous integration
+
+The `Platforms` workflow cross-compiles every non-host `GOOS` and runs the
+test and race suites natively on Linux, macOS and Windows; the macOS and
+Windows jobs are gated behind the cheap Linux ones. Those runners also run
+`make tidy` and fail on any resulting diff, so formatting, spelling, and
+markdown must already be clean. The same run covers platform-specific files
+a Linux-only check never reaches, since they compile only on their own
+platform.
+
+The build scripts rely on GNU-only behaviour. macOS runners install the GNU
+utilities and pass them through as make variables; the same overrides work
+on any BSD userland:
+
+```bash
+make test SED=gsed GREP=ggrep SORT=gsort XARGS=gxargs
+```
 
 ## Testing
 

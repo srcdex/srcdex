@@ -8,6 +8,7 @@
     "docstrings",
     "FAISS",
     "fsnotify",
+    "GOOS",
     "GOPATH",
     "GOTEST",
     "gotreesitter",

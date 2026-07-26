@@ -43,8 +43,13 @@ srcdex vendors the shared darvaza.org build system. Common commands:
 ```bash
 make tidy         # format, lint, spell-check, validate
 make test         # run tests
+make vet          # type-check every package and its tests
 make coverage     # tests with coverage
 ```
+
+Tests and race detection run natively on Linux, macOS and Windows in CI, so
+`GOOS=windows make vet` is worth running locally before pushing code that
+touches platform-specific paths.
 
 For the full build-system reference (targets, tooling, linting, CI, and the
 pre-commit workflow), see [darvaza.org/core BUILDING.md][building]. For
